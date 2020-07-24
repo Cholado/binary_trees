@@ -3,4 +3,6 @@
 try*
 *.out
 test*
-main*
+*main*
+*binary_tree_print.c
+.*
