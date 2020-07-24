@@ -1,22 +1,43 @@
 #include "binary_trees.h"
 
 /**
- * f_on_level - perform a function on a specific level of a binary tree
- * @tree: tree to perform in
- * @level: level to perform in
- * @func: function to perform
+ * binary_tree_height - measures the height of a binary tree
+ * @tree: pointer to the root node of the tree to measure the height of
  *
- * Return: 1 if things were done, 0 otherwise
+ * Return: the height of the tree. If tree is NULL, return 0
  */
-size_t f_on_level(const binary_tree_t *tree, size_t level, void (*func)(int))
+size_t binary_tree_height(const binary_tree_t *tree)
 {
+	size_t left, right;
+
 	if (tree == NULL)
 		return (0);
-	if (level != 0)
-		return (do_at_level(tree->left, level - 1, func) +
-			do_at_level(tree->right, level - 1, func));
-	func(tree->n);
-	return (1);
+	left = binary_tree_height(tree->left);
+	right = binary_tree_height(tree->right);
+	if (left >= right)
+		return (1 + left);
+	return (1 + right);
+}
+
+/**
+ * binary_tree_level - perform a function on a specific level of a binary tree
+ * @tree: pointer to the root of the tree
+ * @l: level of the tree to perform a function on
+ * @func: function to perform
+ *
+ * Return: void
+ */
+void binary_tree_level(const binary_tree_t *tree, size_t l, void (*func)(int))
+{
+	if (tree == NULL)
+		return;
+	if (l == 1)
+		func(tree->n);
+	else if (l > 1)
+	{
+		binary_tree_level(tree->left, l - 1, func);
+		binary_tree_level(tree->right, l - 1, func);
+	}
 }
 
 /**
@@ -28,10 +49,11 @@ size_t f_on_level(const binary_tree_t *tree, size_t level, void (*func)(int))
  */
 void binary_tree_levelorder(const binary_tree_t *tree, void (*func)(int))
 {
-	size_t depth, ret;
+	size_t height, i;
 
-	if (tree == NULL)
+	if (tree == NULL || func == NULL)
 		return;
-	for (depth = 0, ret = 1; ret; depth++)
-		ret = f_on_level(tree, depth, func);
+	height = binary_tree_height(tree);
+	for (i = 1; i <= height; i++)
+		binary_tree_level(tree, i, func);
 }
